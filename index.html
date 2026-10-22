@@ -1,0 +1,755 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f7fb">
+<title>EVERYDAY OS</title>
+<style>
+:root {
+  --bg:#f5f7fb;
+  --panel:#ffffff;
+  --text:#202938;
+  --muted:#7c8798;
+  --line:#e6eaf1;
+  --primary:#5367e8;
+  --soft:#edf0ff;
+  --green:#17865d;
+  --red:#d84e5c;
+  --radius:17px;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,"Malgun Gothic",sans-serif;
+  font-size:15px;line-height:1.55;
+}
+button,input,select,textarea {font:inherit}
+button {cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,
+textarea:focus-visible {outline:3px solid #aab5ff;outline-offset:2px}
+.app {max-width:1200px;margin:auto;padding:22px}
+header {
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;margin-bottom:23px;
+}
+.brand {display:flex;align-items:center;gap:12px}
+.logo {
+  width:45px;height:45px;display:grid;place-items:center;
+  border-radius:14px;background:var(--primary);color:white;
+  font-weight:900;font-size:20px;
+}
+h1 {font-size:23px;margin:0;letter-spacing:-.7px}
+.subtitle {color:var(--muted);font-size:12px}
+.date-label {color:var(--muted);text-align:right;font-size:13px}
+.layout {display:grid;grid-template-columns:210px minmax(0,1fr);gap:22px}
+.sidebar {display:flex;flex-direction:column;gap:6px}
+.nav {
+  display:flex;align-items:center;gap:11px;text-align:left;
+  padding:12px 14px;border:0;border-radius:12px;
+  color:#657086;background:transparent;font-weight:600;
+}
+.nav:hover {background:#eceffd}
+.nav.active {background:var(--soft);color:var(--primary)}
+.side-note {margin-top:15px;padding:14px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:12px;color:var(--muted)}
+main {min-width:0}
+.page {display:none}
+.page.active {display:block}
+.page-head {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+h2 {margin:0;font-size:24px;letter-spacing:-.7px}
+h3 {font-size:16px;margin:0 0 13px}
+.muted {color:var(--muted)}
+.small {font-size:12px}
+.grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:17px}
+.card,.stat {
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:18px;min-width:0;
+}
+.stat-label {font-size:12px;color:var(--muted);font-weight:600}
+.stat-value {font-size:25px;font-weight:800;margin-top:7px;overflow-wrap:anywhere}
+.stat-sub {font-size:12px;color:var(--muted);margin-top:4px}
+.progress {height:7px;border-radius:9px;background:#e9edf5;overflow:hidden;margin-top:12px}
+.progress > div {height:100%;background:var(--primary);width:0;transition:width .2s}
+.row {display:flex;align-items:center;gap:9px}
+.between {justify-content:space-between}
+.wrap {flex-wrap:wrap}
+.grow {flex:1;min-width:0}
+.form-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field {display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.full {grid-column:1/-1}
+label {font-size:12px;font-weight:700;color:#5f6b7e}
+input,select,textarea {
+  width:100%;min-width:0;background:#fff;color:var(--text);
+  border:1px solid #dce2ec;border-radius:10px;padding:10px 11px;
+}
+textarea {resize:vertical;min-height:75px}
+.btn {
+  border:1px solid var(--line);border-radius:10px;padding:9px 13px;
+  background:#fff;color:var(--text);font-weight:700;
+}
+.btn:hover {filter:brightness(.97)}
+.btn.primary {background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn.danger {color:var(--red)}
+.btn.small-btn {padding:5px 9px;font-size:12px}
+.actions {display:flex;gap:6px;flex-wrap:wrap}
+.toolbar {display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar input,.toolbar select {flex:1;min-width:120px}
+.list {display:flex;flex-direction:column;gap:9px}
+.item {
+  border:1px solid var(--line);border-radius:12px;padding:12px;
+  display:flex;align-items:flex-start;gap:10px;background:#fff;
+}
+.item-body {flex:1;min-width:0}
+.item-title {font-weight:700;overflow-wrap:anywhere}
+.item-title.done {text-decoration:line-through;color:var(--muted)}
+.item-meta {font-size:12px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.check {width:19px;height:19px;accent-color:var(--primary);flex-shrink:0;margin-top:3px}
+.empty {padding:24px;text-align:center;color:var(--muted);border:1px dashed #d8deea;border-radius:12px}
+.pill {display:inline-block;background:#edf0ff;color:#5367e8;border-radius:99px;padding:3px 8px;font-size:11px;font-weight:700}
+.amount-in {color:var(--green);font-weight:800}
+.amount-out {color:var(--red);font-weight:800}
+.section-gap {margin-top:15px}
+.notice {padding:12px;border-radius:11px;background:#f1f4ff;color:#4f5da6;font-size:12px;margin-bottom:13px}
+footer {text-align:center;color:var(--muted);font-size:12px;padding:24px 0 8px}
+.mobile-nav {display:none}
+.hidden {display:none!important}
+hr {border:0;border-top:1px solid var(--line);margin:16px 0}
+@media(max-width:800px) {
+  .app {padding:15px}
+  .layout {display:block}
+  .sidebar {display:none}
+  .mobile-nav {
+    display:flex;gap:6px;overflow-x:auto;padding:6px;
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    margin-bottom:17px;position:sticky;top:5px;z-index:5;
+  }
+  .mobile-nav .nav {white-space:nowrap;padding:9px 11px;font-size:12px}
+  .stats {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid {grid-template-columns:1fr}
+  .stat {padding:14px}
+  .stat-value {font-size:22px}
+}
+@media(max-width:420px) {
+  .app {padding:10px}
+  h1 {font-size:19px}
+  h2 {font-size:21px}
+  .page-head {align-items:flex-start}
+  .form-grid {grid-template-columns:1fr}
+  .field.full {grid-column:auto}
+  .card {padding:14px}
+  .date-label {font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">
+    <div class="logo">E</div>
+    <div>
+      <h1>EVERYDAY OS</h1>
+      <div class="subtitle">나의 하루를 정리하는 생활 관리 도구</div>
+    </div>
+  </div>
+  <div class="date-label" id="headerDate"></div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sideNav"></nav>
+  <main>
+    <nav class="mobile-nav" id="mobileNav"></nav>
+
+    <section class="page active" id="page-home">
+      <div class="page-head">
+        <div><div class="muted small" id="greetingDate"></div><h2>오늘의 생활</h2></div>
+        <button class="btn primary" onclick="go('tasks')">+ 할 일 추가</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">오늘 할 일</div><div class="stat-value" id="homeTasks">0</div><div class="stat-sub">완료 / 전체</div></div>
+        <div class="stat"><div class="stat-label">오늘 달성률</div><div class="stat-value" id="homeRate">0%</div><div class="progress"><div id="homeProgress"></div></div></div>
+        <div class="stat"><div class="stat-label">현재 용돈 잔액</div><div class="stat-value" id="homeMoney">0원</div><div class="stat-sub">기록된 수입 − 지출</div></div>
+        <div class="stat"><div class="stat-label">장보기 미완료</div><div class="stat-value" id="homeShopping">0</div><div class="stat-sub">구매할 물품</div></div>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="row between"><h3>오늘 할 일</h3><button class="btn small-btn" onclick="go('tasks')">전체 보기</button></div>
+          <div class="list" id="homeTaskList"></div>
+        </div>
+        <div class="card">
+          <div class="row between"><h3>오늘의 습관</h3><button class="btn small-btn" onclick="go('habits')">관리</button></div>
+          <div class="list" id="homeHabitList"></div>
+        </div>
+        <div class="card">
+          <h3>다가오는 일정</h3>
+          <div class="list" id="homeUpcoming"></div>
+        </div>
+        <div class="card">
+          <h3>빠른 실행</h3>
+          <div class="row wrap">
+            <button class="btn" onclick="go('shopping')">🛒 장보기</button>
+            <button class="btn" onclick="go('items')">📦 물건 찾기</button>
+            <button class="btn" onclick="go('money')">💰 용돈 기록</button>
+            <button class="btn" onclick="go('backup')">💾 데이터 백업</button>
+          </div>
+          <hr>
+          <div class="muted small">입력한 데이터는 이 브라우저에 자동 저장돼. 중요한 데이터는 백업해 줘.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-tasks">
+      <div class="page-head"><h2>할 일 · 일정</h2></div>
+      <div class="card">
+        <h3 id="taskFormTitle">새로운 할 일 등록</h3>
+        <form id="taskForm" class="form-grid">
+          <input type="hidden" id="taskId">
+          <div class="field full"><label for="taskTitle">할 일 이름 *</label><input id="taskTitle" maxlength="120" required placeholder="예: 수학 숙제하기"></div>
+          <div class="field"><label for="taskDate">날짜 *</label><input id="taskDate" type="date" required></div>
+          <div class="field"><label for="taskTime">시간 (선택)</label><input id="taskTime" type="time"></div>
+          <div class="field"><label for="taskCategory">분류</label><select id="taskCategory"><option>일상</option><option>공부</option><option>약속</option><option>건강</option><option>기타</option></select></div>
+          <div class="field"><label for="taskPriority">중요도</label><select id="taskPriority"><option value="보통">보통</option><option value="높음">높음</option><option value="낮음">낮음</option></select></div>
+          <div class="field full"><label for="taskMemo">메모</label><textarea id="taskMemo" maxlength="1000" placeholder="필요한 내용"></textarea></div>
+          <div class="field full actions"><button class="btn primary" type="submit" id="taskSubmit">할 일 저장</button><button class="btn hidden" type="button" id="taskCancel" onclick="cancelTaskEdit()">수정 취소</button></div>
+        </form>
+      </div>
+      <div class="card section-gap">
+        <h3>할 일 목록</h3>
+        <div class="toolbar">
+          <input id="taskSearch" placeholder="이름·메모 검색">
+          <input id="taskFilterDate" type="date" aria-label="날짜 필터">
+          <select id="taskFilterStatus"><option value="all">모든 상태</option><option value="todo">미완료</option><option value="done">완료</option></select>
+        </div>
+        <div class="list" id="taskList"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-shopping">
+      <div class="page-head"><h2>장보기 목록</h2></div>
+      <div class="card">
+        <form id="shoppingForm" class="row wrap">
+          <div class="grow"><input id="shoppingName" required maxlength="120" placeholder="구매할 물건"></div>
+          <div style="width:95px"><input id="shoppingQty" maxlength="30" placeholder="수량"></div>
+          <button class="btn primary" type="submit">추가</button>
+        </form>
+      </div>
+      <div class="card section-gap">
+        <div class="toolbar"><input id="shoppingSearch" placeholder="물품 검색"><select id="shoppingFilter"><option value="all">전체</option><option value="todo">구매 예정</option><option value="done">구매 완료</option></select></div>
+        <div class="row between"><h3>구매 목록</h3><button class="btn small-btn" onclick="clearCompletedShopping()">구매 완료 항목 정리</button></div>
+        <div class="list" id="shoppingList"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-money">
+      <div class="page-head"><h2>용돈 관리</h2></div>
+      <div class="notice">처음 잔액이 0원이라면 이전 잔액을 수입으로 등록하거나 아래에서 시작 잔액을 설정해 줘.</div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">현재 잔액</div><div class="stat-value" id="moneyBalance">0원</div></div>
+        <div class="stat"><div class="stat-label">총 수입</div><div class="stat-value" id="moneyIncome">0원</div></div>
+        <div class="stat"><div class="stat-label">총 지출</div><div class="stat-value" id="moneyExpense">0원</div></div>
+        <div class="stat"><div class="stat-label">이번 달 지출</div><div class="stat-value" id="moneyMonth">0원</div></div>
+      </div>
+      <div class="card">
+        <h3 id="moneyFormTitle">거래 기록 추가</h3>
+        <form id="moneyForm" class="form-grid">
+          <input type="hidden" id="moneyId">
+          <div class="field"><label for="moneyType">종류</label><select id="moneyType"><option value="expense">지출</option><option value="income">수입</option></select></div>
+          <div class="field"><label for="moneyAmount">금액 (원) *</label><input id="moneyAmount" type="number" min="1" max="1000000000" step="1" required placeholder="5000"></div>
+          <div class="field"><label for="moneyDate">날짜 *</label><input id="moneyDate" type="date" required></div>
+          <div class="field"><label for="moneyCategory">분류</label><select id="moneyCategory"><option>용돈</option><option>간식</option><option>식비</option><option>교통</option><option>학용품</option><option>선물</option><option>저축</option><option>기타</option></select></div>
+          <div class="field full"><label for="moneyMemo">내용 *</label><input id="moneyMemo" maxlength="120" required placeholder="예: 간식 구매"></div>
+          <div class="field full actions"><button class="btn primary" type="submit" id="moneySubmit">거래 저장</button><button class="btn hidden" id="moneyCancel" type="button" onclick="cancelMoneyEdit()">수정 취소</button></div>
+        </form>
+      </div>
+      <div class="card section-gap">
+        <h3>거래 내역</h3>
+        <div class="toolbar"><input id="moneySearch" placeholder="내용 검색"><select id="moneyFilter"><option value="all">전체 거래</option><option value="income">수입만</option><option value="expense">지출만</option></select></div>
+        <div class="list" id="moneyList"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-items">
+      <div class="page-head"><h2>내 물건 찾기</h2></div>
+      <div class="card">
+        <h3 id="itemFormTitle">물건 등록</h3>
+        <form id="itemForm" class="form-grid">
+          <input type="hidden" id="itemId">
+          <div class="field"><label for="itemName">물건 이름 *</label><input id="itemName" required maxlength="120" placeholder="예: 충전기"></div>
+          <div class="field"><label for="itemLocation">보관 장소 *</label><input id="itemLocation" required maxlength="120" placeholder="예: 책상 두 번째 서랍"></div>
+          <div class="field"><label for="itemQty">수량</label><input id="itemQty" maxlength="30" placeholder="예: 2개"></div>
+          <div class="field"><label for="itemMemo">메모</label><input id="itemMemo" maxlength="250" placeholder="색상, 특징 등"></div>
+          <div class="field full actions"><button class="btn primary" type="submit" id="itemSubmit">물건 저장</button><button class="btn hidden" type="button" id="itemCancel" onclick="cancelItemEdit()">수정 취소</button></div>
+        </form>
+      </div>
+      <div class="card section-gap">
+        <h3>등록된 물건</h3>
+        <div class="toolbar"><input id="itemSearch" placeholder="물건·장소·메모 검색"></div>
+        <div class="list" id="itemList"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-habits">
+      <div class="page-head"><h2>생활 습관</h2></div>
+      <div class="card">
+        <h3>습관 추가</h3>
+        <form id="habitForm" class="row wrap">
+          <div class="grow"><input id="habitName" required maxlength="100" placeholder="예: 책 10분 읽기"></div>
+          <button class="btn primary" type="submit">습관 추가</button>
+        </form>
+      </div>
+      <div class="card section-gap">
+        <div class="row between wrap"><div><h3>오늘의 실천</h3><div class="muted small" id="habitDate"></div></div><div class="pill" id="habitRate">0% 완료</div></div>
+        <div class="progress"><div id="habitProgress"></div></div>
+        <div class="list section-gap" id="habitList"></div>
+      </div>
+      <div class="card section-gap">
+        <h3>날짜별 기록</h3>
+        <div class="field"><label for="habitHistoryDate">기록 날짜 선택</label><input id="habitHistoryDate" type="date"></div>
+        <div class="list section-gap" id="habitHistory"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-backup">
+      <div class="page-head"><h2>설정 · 데이터 백업</h2></div>
+      <div class="card">
+        <h3>데이터 내보내기</h3>
+        <p class="muted">현재 할 일, 일정, 용돈, 물품, 장보기, 습관 기록을 JSON 파일로 저장해. 다른 기기로 옮길 때도 사용할 수 있어.</p>
+        <button class="btn primary" onclick="exportData()">데이터 백업 파일 다운로드</button>
+      </div>
+      <div class="card section-gap">
+        <h3>데이터 가져오기</h3>
+        <p class="muted">이 앱에서 내보낸 JSON 파일을 선택해. 가져오면 현재 데이터가 백업 파일의 데이터로 교체돼.</p>
+        <input type="file" id="importFile" accept=".json,application/json">
+        <div class="section-gap"><button class="btn primary" onclick="importData()">백업 파일 불러오기</button></div>
+      </div>
+      <div class="card section-gap">
+        <h3>저장 공간</h3>
+        <div class="muted" id="storageInfo">저장 정보를 확인 중이야.</div>
+        <hr>
+        <button class="btn danger" onclick="resetData()">모든 데이터 초기화</button>
+        <p class="muted small">초기화는 되돌릴 수 없어. 필요한 데이터는 먼저 백업해 줘.</p>
+      </div>
+      <div class="card section-gap">
+        <h3>사용 안내</h3>
+        <ul class="muted">
+          <li>데이터는 현재 브라우저의 로컬 저장 공간에 보관돼.</li>
+          <li>브라우저 데이터 삭제, 시크릿 모드, 다른 브라우저 사용 시 데이터가 사라지거나 보이지 않을 수 있어.</li>
+          <li>다른 기기와 자동 동기화되지는 않아. 백업 파일을 직접 옮겨서 가져와야 해.</li>
+          <li>이 앱은 외부 서버나 API를 호출하지 않아.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+<footer>EVERYDAY OS · 나의 데이터는 내 기기에</footer>
+</div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "everyday_os_v1";
+const $ = id => document.getElementById(id);
+
+const navItems = [
+  ["home","⌂","홈"],
+  ["tasks","☑","할 일·일정"],
+  ["shopping","🛒","장보기"],
+  ["money","₩","용돈 관리"],
+  ["items","▣","내 물건"],
+  ["habits","✓","생활 습관"],
+  ["backup","⚙","설정·백업"]
+];
+
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,9);
+}
+function freshData() {
+  return {version:1,tasks:[],shopping:[],transactions:[],items:[],habits:[],habitLogs:{}};
+}
+function normalizeData(raw) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("올바른 백업 파일이 아니야.");
+  const out = freshData();
+  for (const k of ["tasks","shopping","transactions","items","habits"]) {
+    if (raw[k] !== undefined && !Array.isArray(raw[k])) throw new Error(k + " 데이터 형식이 올바르지 않아.");
+    out[k] = (raw[k] || []).map(x => {
+      if (!x || typeof x !== "object" || Array.isArray(x)) throw new Error("데이터 항목 형식이 올바르지 않아.");
+      return {...x};
+    });
+  }
+  if (raw.habitLogs !== undefined &&
+      (!raw.habitLogs || typeof raw.habitLogs !== "object" || Array.isArray(raw.habitLogs))) {
+    throw new Error("습관 기록 형식이 올바르지 않아.");
+  }
+  out.habitLogs = raw.habitLogs || {};
+  return out;
+}
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? normalizeData(JSON.parse(raw)) : freshData();
+  } catch (e) {
+    alert("저장 데이터를 읽지 못했어. 저장 공간을 확인해 줇.\n" + e.message);
+    return freshData();
+  }
+}
+let data = loadData();
+
+function save() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    renderAll();
+    return true;
+  } catch (e) {
+    alert("저장에 실패했어. 브라우저 저장 공간이 부족하거나 저장이 차단됐을 수 있어. 백업을 확인해 줘.");
+    return false;
+  }
+}
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+function money(n) {
+  return Math.round(Number(n) || 0).toLocaleString("ko-KR") + "원";
+}
+function dateText(s) {
+  if (!s) return "날짜 미정";
+  const p = s.split("-");
+  return p.length === 3 ? `${p[0]}.${p[1]}.${p[2]}` : s;
+}
+function empty(text) {
+  return `<div class="empty">${esc(text)}</div>`;
+}
+function sortByDate(a,b) {
+  return (a.date || "").localeCompare(b.date || "") ||
+    (a.time || "").localeCompare(b.time || "");
+}
+function addNav() {
+  const html = navItems.map(([id,icon,label]) =>
+    `<button class="nav ${id==="home"?"active":""}" data-go="${id}" type="button"><span>${icon}</span>${label}</button>`
+  ).join("");
+  $("sideNav").innerHTML = html;
+  $("mobileNav").innerHTML = html;
+}
+function go(id) {
+  if (!navItems.some(x => x[0] === id)) return;
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active",p.id==="page-"+id));
+  document.querySelectorAll("[data-go]").forEach(b => b.classList.toggle("active",b.dataset.go===id));
+  if (id==="backup") updateStorageInfo();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.addEventListener("click",e => {
+  const b=e.target.closest("[data-go]");
+  if (b) go(b.dataset.go);
+});
+
+function renderHome() {
+  const t=data.tasks.filter(x=>x.date===today());
+  const done=t.filter(x=>x.done).length;
+  const rate=t.length?Math.round(done/t.length*100):0;
+  $("homeTasks").textContent=`${done} / ${t.length}`;
+  $("homeRate").textContent=rate+"%";
+  $("homeProgress").style.width=rate+"%";
+  const balance=data.transactions.reduce((s,x)=>s+(x.type==="income"?1:-1)*Number(x.amount||0),0);
+  $("homeMoney").textContent=money(balance);
+  $("homeShopping").textContent=data.shopping.filter(x=>!x.done).length;
+  const todayTasks=t.slice().sort((a,b)=>Number(a.done)-Number(b.done) || sortByDate(a,b));
+  $("homeTaskList").innerHTML=todayTasks.length?todayTasks.slice(0,6).map(x=>`
+    <div class="item">
+      <input class="check" type="checkbox" ${x.done?"checked":""} aria-label="완료 처리" onchange="toggleTask('${x.id}')">
+      <div class="item-body">
+        <div class="item-title ${x.done?"done":""}">${esc(x.title)}</div>
+        <div class="item-meta">${esc(x.time||"시간 미정")} · ${esc(x.category||"일상")}</div>
+      </div>
+    </div>`).join(""):empty("오늘 등록된 할 일이 없어.");
+  const todayLogs=data.habitLogs[today()]||{};
+  $("homeHabitList").innerHTML=data.habits.length?data.habits.slice(0,6).map(h=>`
+    <div class="item">
+      <input class="check" type="checkbox" ${todayLogs[h.id]?"checked":""} aria-label="습관 완료" onchange="toggleHabit('${h.id}')">
+      <div class="item-body"><div class="item-title ${todayLogs[h.id]?"done":""}">${esc(h.name)}</div></div>
+    </div>`).join(""):empty("습관을 추가해 봐.");
+  const upcoming=data.tasks.filter(x=>!x.done&&x.date>=today()).slice().sort(sortByDate).slice(0,5);
+  $("homeUpcoming").innerHTML=upcoming.length?upcoming.map(x=>`
+    <div class="item"><div class="item-body"><div class="item-title">${esc(x.title)}</div><div class="item-meta">${dateText(x.date)} ${esc(x.time||"")}</div></div></div>
+  `).join(""):empty("예정된 일정이 없어.");
+}
+
+function taskHTML(x) {
+  return `<div class="item">
+    <input class="check" type="checkbox" ${x.done?"checked":""} aria-label="완료 처리" onchange="toggleTask('${x.id}')">
+    <div class="item-body">
+      <div class="item-title ${x.done?"done":""}">${esc(x.title)}</div>
+      <div class="item-meta">${dateText(x.date)} ${esc(x.time||"시간 미정")} · ${esc(x.category||"일상")} · 중요도 ${esc(x.priority||"보통")}</div>
+      ${x.memo?`<div class="item-meta">${esc(x.memo)}</div>`:""}
+    </div>
+    <div class="actions">
+      <button class="btn small-btn" onclick="editTask('${x.id}')">수정</button>
+      <button class="btn small-btn danger" onclick="deleteTask('${x.id}')">삭제</button>
+    </div>
+  </div>`;
+}
+function renderTasks() {
+  const q=$("taskSearch").value.trim().toLowerCase();
+  const d=$("taskFilterDate").value;
+  const st=$("taskFilterStatus").value;
+  const arr=data.tasks.filter(x=>
+    (!q || [x.title,x.memo,x.category].some(v=>String(v||"").toLowerCase().includes(q))) &&
+    (!d || x.date===d) &&
+    (st==="all" || (st==="done"?x.done:!x.done))
+  ).slice().sort((a,b)=>Number(a.done)-Number(b.done)||sortByDate(a,b));
+  $("taskList").innerHTML=arr.length?arr.map(taskHTML).join(""):empty("조건에 맞는 할 일이 없어.");
+}
+function clearTaskForm() {
+  $("taskForm").reset(); $("taskId").value=""; $("taskDate").value=today();
+  $("taskFormTitle").textContent="새로운 할 일 등록";
+  $("taskSubmit").textContent="할 일 저장"; $("taskCancel").classList.add("hidden");
+}
+function cancelTaskEdit(){clearTaskForm();}
+$("taskForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const title=$("taskTitle").value.trim();
+  if(!title)return;
+  const id=$("taskId").value;
+  const item={id:id||uid(),title,date:$("taskDate").value,time:$("taskTime").value,
+    category:$("taskCategory").value,priority:$("taskPriority").value,
+    memo:$("taskMemo").value.trim(),done:id?(data.tasks.find(x=>x.id===id)?.done||false):false};
+  if(id) data.tasks=data.tasks.map(x=>x.id===id?item:x);
+  else data.tasks.push(item);
+  if(save())clearTaskForm();
+});
+function editTask(id) {
+  const x=data.tasks.find(v=>v.id===id);if(!x)return;
+  $("taskId").value=x.id;$("taskTitle").value=x.title;$("taskDate").value=x.date;
+  $("taskTime").value=x.time||"";$("taskCategory").value=x.category||"일상";
+  $("taskPriority").value=x.priority||"보통";$("taskMemo").value=x.memo||"";
+  $("taskFormTitle").textContent="할 일 수정";$("taskSubmit").textContent="수정 저장";
+  $("taskCancel").classList.remove("hidden");
+  $("taskForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function toggleTask(id) {
+  const x=data.tasks.find(v=>v.id===id);if(x){x.done=!x.done;save();}
+}
+function deleteTask(id) {
+  if(!confirm("이 할 일과 일정을 삭제할까?"))return;
+  data.tasks=data.tasks.filter(x=>x.id!==id);save();
+}
+["taskSearch","taskFilterDate","taskFilterStatus"].forEach(id=>$(id).addEventListener("input",renderTasks));
+
+function renderShopping() {
+  const q=$("shoppingSearch").value.trim().toLowerCase(),f=$("shoppingFilter").value;
+  const arr=data.shopping.filter(x=>
+    (!q||x.name.toLowerCase().includes(q)) &&
+    (f==="all"||(f==="done"?x.done:!x.done))
+  ).slice().sort((a,b)=>Number(a.done)-Number(b.done));
+  $("shoppingList").innerHTML=arr.length?arr.map(x=>`
+    <div class="item">
+      <input class="check" type="checkbox" ${x.done?"checked":""} aria-label="구매 완료" onchange="toggleShopping('${x.id}')">
+      <div class="item-body"><div class="item-title ${x.done?"done":""}">${esc(x.name)}</div><div class="item-meta">${x.qty?`수량: ${esc(x.qty)}`:"수량 미지정"}</div></div>
+      <button class="btn small-btn danger" onclick="deleteShopping('${x.id}')">삭제</button>
+    </div>`).join(""):empty("장보기 목록이 비어 있어.");
+}
+$("shoppingForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("shoppingName").value.trim();if(!name)return;
+  data.shopping.push({id:uid(),name,qty:$("shoppingQty").value.trim(),done:false});
+  if(save())$("shoppingForm").reset();
+});
+function toggleShopping(id){const x=data.shopping.find(v=>v.id===id);if(x){x.done=!x.done;save();}}
+function deleteShopping(id){data.shopping=data.shopping.filter(x=>x.id!==id);save();}
+function clearCompletedShopping(){
+  const n=data.shopping.filter(x=>x.done).length;
+  if(!n){alert("정리할 구매 완료 항목이 없어.");return;}
+  if(confirm(`구매 완료 항목 ${n}개를 삭제할까?`)){
+    data.shopping=data.shopping.filter(x=>!x.done);save();
+  }
+}
+["shoppingSearch","shoppingFilter"].forEach(id=>$(id).addEventListener("input",renderShopping));
+
+function renderMoney() {
+  const income=data.transactions.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount),0);
+  const expense=data.transactions.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount),0);
+  const month=today().slice(0,7);
+  const mExpense=data.transactions.filter(x=>x.type==="expense"&&(x.date||"").startsWith(month)).reduce((s,x)=>s+Number(x.amount),0);
+  $("moneyBalance").textContent=money(income-expense);
+  $("moneyIncome").textContent=money(income);$("moneyExpense").textContent=money(expense);
+  $("moneyMonth").textContent=money(mExpense);
+  const q=$("moneySearch").value.trim().toLowerCase(),f=$("moneyFilter").value;
+  const arr=data.transactions.filter(x=>
+    (!q||[x.memo,x.category].some(v=>String(v||"").toLowerCase().includes(q))) &&
+    (f==="all"||x.type===f)
+  ).slice().sort((a,b)=>sortByDate(b,a));
+  $("moneyList").innerHTML=arr.length?arr.map(x=>`
+    <div class="item"><div class="item-body">
+      <div class="item-title">${esc(x.memo)}</div>
+      <div class="item-meta">${dateText(x.date)} · ${esc(x.category||"기타")}</div>
+      <div class="${x.type==="income"?"amount-in":"amount-out"}">${x.type==="income"?"+":"−"}${money(x.amount)}</div>
+    </div><div class="actions">
+      <button class="btn small-btn" onclick="editMoney('${x.id}')">수정</button>
+      <button class="btn small-btn danger" onclick="deleteMoney('${x.id}')">삭제</button>
+    </div></div>`).join(""):empty("거래 기록이 없어.");
+}
+function clearMoneyForm(){
+  $("moneyForm").reset();$("moneyId").value="";$("moneyDate").value=today();
+  $("moneyFormTitle").textContent="거래 기록 추가";$("moneySubmit").textContent="거래 저장";
+  $("moneyCancel").classList.add("hidden");
+}
+function cancelMoneyEdit(){clearMoneyForm();}
+$("moneyForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const amount=Number($("moneyAmount").value),memo=$("moneyMemo").value.trim();
+  if(!Number.isSafeInteger(amount)||amount<1||amount>1000000000){alert("1원 이상 10억 원 이하의 정수 금액을 입력해 줘.");return;}
+  if(!memo)return;
+  const id=$("moneyId").value;
+  const x={id:id||uid(),type:$("moneyType").value,amount,date:$("moneyDate").value,
+    category:$("moneyCategory").value,memo};
+  if(id)data.transactions=data.transactions.map(v=>v.id===id?x:v);
+  else data.transactions.push(x);
+  if(save())clearMoneyForm();
+});
+function editMoney(id){
+  const x=data.transactions.find(v=>v.id===id);if(!x)return;
+  $("moneyId").value=x.id;$("moneyType").value=x.type;$("moneyAmount").value=x.amount;
+  $("moneyDate").value=x.date;$("moneyCategory").value=x.category||"기타";$("moneyMemo").value=x.memo;
+  $("moneyFormTitle").textContent="거래 수정";$("moneySubmit").textContent="수정 저장";
+  $("moneyCancel").classList.remove("hidden");$("moneyForm").scrollIntoView({behavior:"smooth"});
+}
+function deleteMoney(id){
+  if(confirm("이 거래 기록을 삭제할까?")){data.transactions=data.transactions.filter(x=>x.id!==id);save();}
+}
+["moneySearch","moneyFilter"].forEach(id=>$(id).addEventListener("input",renderMoney));
+
+function renderItems(){
+  const q=$("itemSearch").value.trim().toLowerCase();
+  const arr=data.items.filter(x=>[x.name,x.location,x.qty,x.memo].some(v=>String(v||"").toLowerCase().includes(q)));
+  $("itemList").innerHTML=arr.length?arr.map(x=>`
+    <div class="item"><div class="item-body">
+      <div class="item-title">${esc(x.name)}</div>
+      <div class="item-meta">📍 ${esc(x.location)}</div>
+      ${x.qty?`<div class="item-meta">수량: ${esc(x.qty)}</div>`:""}
+      ${x.memo?`<div class="item-meta">${esc(x.memo)}</div>`:""}
+    </div><div class="actions"><button class="btn small-btn" onclick="editItem('${x.id}')">수정</button><button class="btn small-btn danger" onclick="deleteItem('${x.id}')">삭제</button></div></div>`).join(""):empty("등록된 물건이 없어.");
+}
+function clearItemForm(){
+  $("itemForm").reset();$("itemId").value="";$("itemFormTitle").textContent="물건 등록";
+  $("itemSubmit").textContent="물건 저장";$("itemCancel").classList.add("hidden");
+}
+function cancelItemEdit(){clearItemForm();}
+$("itemForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("itemName").value.trim(),location=$("itemLocation").value.trim();
+  if(!name||!location)return;
+  const id=$("itemId").value;
+  const x={id:id||uid(),name,location,qty:$("itemQty").value.trim(),memo:$("itemMemo").value.trim()};
+  if(id)data.items=data.items.map(v=>v.id===id?x:v);else data.items.push(x);
+  if(save())clearItemForm();
+});
+function editItem(id){
+  const x=data.items.find(v=>v.id===id);if(!x)return;
+  $("itemId").value=x.id;$("itemName").value=x.name;$("itemLocation").value=x.location;
+  $("itemQty").value=x.qty||"";$("itemMemo").value=x.memo||"";
+  $("itemFormTitle").textContent="물건 정보 수정";$("itemSubmit").textContent="수정 저장";
+  $("itemCancel").classList.remove("hidden");$("itemForm").scrollIntoView({behavior:"smooth"});
+}
+function deleteItem(id){
+  if(confirm("이 물건 기록을 삭제할까?")){data.items=data.items.filter(x=>x.id!==id);save();}
+}
+$("itemSearch").addEventListener("input",renderItems);
+
+function renderHabits(){
+  const log=data.habitLogs[today()]||{};
+  const done=data.habits.filter(h=>log[h.id]).length;
+  const rate=data.habits.length?Math.round(done/data.habits.length*100):0;
+  $("habitDate").textContent=dateText(today());
+  $("habitRate").textContent=rate+"% 완료";
+  $("habitProgress").style.width=rate+"%";
+  $("habitList").innerHTML=data.habits.length?data.habits.map(h=>`
+    <div class="item">
+      <input class="check" type="checkbox" ${log[h.id]?"checked":""} aria-label="오늘 습관 완료" onchange="toggleHabit('${h.id}')">
+      <div class="item-body"><div class="item-title ${log[h.id]?"done":""}">${esc(h.name)}</div></div>
+      <button class="btn small-btn danger" onclick="deleteHabit('${h.id}')">삭제</button>
+    </div>`).join(""):empty("매일 실천할 습관을 추가해 봐.");
+  renderHabitHistory();
+}
+$("habitForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("habitName").value.trim();if(!name)return;
+  data.habits.push({id:uid(),name});
+  if(save())$("habitForm").reset();
+});
+function toggleHabit(id){
+  if(!data.habits.some(h=>h.id===id))return;
+  const d=today();if(!data.habitLogs[d])data.habitLogs[d]={};
+  data.habitLogs[d][id]=!data.habitLogs[d][id];save();
+}
+function deleteHabit(id){
+  if(!confirm("이 습관과 관련된 모든 기록을 삭제할까?"))return;
+  data.habits=data.habits.filter(h=>h.id!==id);
+  Object.keys(data.habitLogs).forEach(d=>{delete data.habitLogs[d][id];});
+  save();
+}
+function renderHabitHistory(){
+  const d=$("habitHistoryDate").value||today(),log=data.habitLogs[d]||{};
+  if(!data.habits.length){$("habitHistory").innerHTML=empty("습관이 없어.");return;}
+  $("habitHistory").innerHTML=data.habits.map(h=>`
+    <div class="item"><div class="item-body"><div class="item-title">${esc(h.name)}</div></div>
+    <span class="pill" style="${log[h.id]?"background:#e6f7ef;color:#17865d":""}">${log[h.id]?"실천 완료":"미실천"}</span></div>`).join("");
+}
+$("habitHistoryDate").addEventListener("change",renderHabitHistory);
+
+function exportData(){
+  const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="everyday-os-backup-"+today()+".json";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function importData(){
+  const file=$("importFile").files[0];
+  if(!file){alert("먼저 백업 JSON 파일을 선택해 줘.");return;}
+  if(file.size>10*1024*1024){alert("파일이 너무 커. 10MB 이하의 파일을 선택해 줘.");return;}
+  if(!confirm("현재 데이터가 선택한 백업 데이터로 교체돼. 먼저 현재 데이터도 백업했는지 확인해 줘. 계속할까?"))return;
+  try{
+    const parsed=JSON.parse(await file.text());
+    const incoming=normalizeData(parsed);
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(incoming));
+    data=incoming;renderAll();clearTaskForm();clearMoneyForm();clearItemForm();
+    $("importFile").value="";
+    alert("백업 데이터를 불러왔어!");
+  }catch(e){
+    alert("가져오기에 실패했어. EVERYDAY OS에서 만든 올바른 JSON 파일인지 확인해 줘.\n"+e.message);
+  }
+}
+function updateStorageInfo(){
+  let bytes=0;
+  try{bytes=new Blob([localStorage.getItem(STORAGE_KEY)||""]).size;}catch(e){}
+  $("storageInfo").textContent=`현재 앱 데이터 크기: ${(bytes/1024).toFixed(2)} KB · 등록된 할 일 ${data.tasks.length}개 · 물건 ${data.items.length}개 · 거래 ${data.transactions.length}개`;
+}
+function resetData(){
+  if(!confirm("정말 모든 데이터를 초기화할까? 이 작업은 되돌릴 수 없어."))return;
+  if(!confirm("마지막 확인이야. 백업하지 않은 데이터도 모두 삭제할까?"))return;
+  data=freshData();
+  try{localStorage.removeItem(STORAGE_KEY);localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
+  catch(e){alert("브라우저 저장소를 초기화하지 못했어.");return;}
+  clearTaskForm();clearMoneyForm();clearItemForm();renderAll();
+  alert("데이터를 초기화했어.");
+}
+
+function renderAll(){
+  renderHome();renderTasks();renderShopping();renderMoney();renderItems();renderHabits();updateStorageInfo();
+}
+function init(){
+  addNav();
+  $("headerDate").textContent=new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
+  $("greetingDate").textContent=new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+  $("taskDate").value=today();$("moneyDate").value=today();$("habitHistoryDate").value=today();
+  renderAll();
+}
+init();
+</script>
+</body>
+</html>
